@@ -1,8 +1,10 @@
 <?php
+		$filename = 'counter.txt';
+
 		//opens hits.txt to read 
-		$open = fopen("counter.txt","r+");
+		$open = fopen($filename,"r+");
 		//get the count from the file, last parameter takes the file length, big number
-		$count = fread($open,filesize("counter.txt"));
+		$count = fread($open,filesize($filename));
 		//convert to number
 		$count = intval($count);
 		//closes the hits.txt file
@@ -13,7 +15,7 @@
 		
 
 		// opens hits.txt to change new hit number, by writing in it
-		$open = fopen("counter.txt","w+");
+		$open = fopen($filename,"w+");
 
 		//Writes to the counter
 		fwrite($open, $count);
@@ -22,22 +24,32 @@
 		fclose($open);
 
 		//Finding out when the file was open the last time using filemtime
-		$filename = 'counter.txt';
+		
+		date_timezone_set('America/New_York');
+
+		$modified = filemtime($filename);
+		$tenMinAgo = strtotime('10 minutes ago');
+		$diff = abs($tenMinAgo - $modified);
+
+		echo "$modified " . date ("F d Y H : i : s.", $modified) . "<br>\n";
+		echo "$tenMinAgo " . date ("F d Y H : i : s.", $tenMinAgo) . "<br>\n";
+		echo "$diff<br>\n";
+
 		if(file_exists($filename)) {
 			//prints when the file was open the last time. 
-			echo "$filename was last modified: " . date ("F d Y H : i : s.", filemtime($filename));
+			echo "$filename was last modified: " . date ("F d Y H : i : s.", $modified);
 		}
 
 		//10 min ago from the unix time counter, (not 10 min ago from the file was open)
-		echo "<br>10 min ago was: " . date ("F d Y H : i : s.", strtotime('10 minutes ago'));
+		echo "<br>10 min ago was: " . date ("F d Y H : i : s.", $tenMinAgo);
 
-		////calculate if time has been more than 10 min since last upload then reset. 
-		// if(((filemtime($filename))-(strtotime('10 minutes ago')>10) {
-		// 	echo "Then reset the counter .txt";
-			$count == 0;
-		// } else {
-		// 	echo "Let's keep going";
-		// }
+		//calculate if time has been more than 10 min since last upload then reset. 
+		if($diff > (10 * 60)) {
+			echo "Then reset the counter .txt";
+			$count = 0;
+		} else {
+			echo "Let's keep going";
+		}
 
 ?>
 
